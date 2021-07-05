@@ -1,21 +1,22 @@
 package schemas
 
 type User struct {
-	UUID     string  `json:"uuid" database:"uuid"`
-	Name     string  `json:"name" database:"name"`
-	CPF      string  `json:"cpf" database:"cpf"`
-	Email    string  `json:"email" database:"email"`
-	Password string  `json:"password" database:"password"`
-	Wallet   float64 `json:"wallet" database:"wallet"`
+	UUID       string  `json:"uuid" db:"uuid"`
+	Name       string  `json:"name" db:"name"`
+	Document   string  `json:"document" db:"document"`
+	Email      string  `json:"email" db:"email"`
+	Password   string  `json:"password" db:"password"`
+	Wallet     float64 `json:"wallet" db:"wallet"`
+	CommonUser bool    `json:"common_user" db:"common_user"`
 }
 
 type Shopkeeper struct {
-	UUID     string `json:"uuid" database:"uuid"`
-	Name     string `json:"name" database:"name"`
-	CNPJ     string `json:"cnpj" database:"cnpj"`
-	Email    string `json:"email" database:"email"`
-	Password string `json:"password" database:"password"`
-	Wallet   float64 `json:"wallet" database:"wallet"`
+	UUID     string  `json:"uuid" db:"uuid"`
+	Name     string  `json:"name" db:"name"`
+	CNPJ     string  `json:"cnpj" db:"cnpj"`
+	Email    string  `json:"email" db:"email"`
+	Password string  `json:"password" db:"password"`
+	Wallet   float64 `json:"wallet" db:"wallet"`
 }
 
 type Transfer struct {
