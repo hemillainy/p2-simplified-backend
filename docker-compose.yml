@@ -41,7 +41,7 @@ services:
       - BACKEND_PASSWORD=postgres
       - BACKEND_DB_HOST=rabbitmq
       - BACKEND_DB_PORT=5432
-      - DB_SOURCE=postgres://postgres:postgres@postgres:5432/backend?sslmode=disable
+      - BACKEND_DB_SCHEME=postgres
       - BACKEND_BROKER_HOST=broker
       - BACKEND_BROKER_PORT=5672
       - BACKEND_BROKER_USER=backendtest
