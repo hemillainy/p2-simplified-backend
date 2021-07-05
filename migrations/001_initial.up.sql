@@ -3,19 +3,11 @@ CREATE TABLE "users" (
      "email" character varying(256) NOT NULL,
      "password" character varying(256) NOT NULL,
      "name" character varying(256) NOT NULL,
-     "cpf" character varying(11) NOT NULL,
+     "document" character varying(15) NOT NULL,
      "wallet" float default 0 NOT NULL,
-     PRIMARY KEY ("uuid")
-);
-
-CREATE TABLE "shopkeepers"(
-    "uuid" UUID NOT NULL,
-    "email" character varying(256) NOT NULL,
-    "password" character varying(256) NOT NULL,
-    "name" character varying(256) NOT NULL,
-    "cnpj" character varying(14) NOT NULL,
-    "wallet" float NOT NULL,
-    PRIMARY KEY ("uuid")
+     "common_user" bool default true,
+     PRIMARY KEY ("uuid"),
+     UNIQUE("email", "document")
 );
 
 CREATE TABLE "transfers"(
