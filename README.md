@@ -1,5 +1,8 @@
 # p2-simplified-backend
 
+![Components Diagram](./component-diagram.png)
+
+
 # Build
 ```bash
 docker-compose build
