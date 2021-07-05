@@ -39,10 +39,10 @@ services:
       - BACKEND_DB_NAME=backend
       - BACKEND_USER=postgres
       - BACKEND_PASSWORD=postgres
-      - BACKEND_DB_HOST=rabbitmq
+      - BACKEND_DB_HOST=postgres
       - BACKEND_DB_PORT=5432
       - BACKEND_DB_SCHEME=postgres
-      - BACKEND_BROKER_HOST=broker
+      - BACKEND_BROKER_HOST=rabbitmq
       - BACKEND_BROKER_PORT=5672
       - BACKEND_BROKER_USER=backendtest
       - BACKEND_BROKER_PASSWORD=backendtest
