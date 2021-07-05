@@ -4,16 +4,22 @@ import (
 	"context"
 	"fmt"
 	"github.com/streadway/amqp"
+	"os"
 )
 
 type Message struct {
-	Queue	string
-	Body	*[]byte
-	ContentType	string
+	Queue       string
+	Body        *[]byte
+	ContentType string
 }
 
 func Publish(ctx context.Context, message Message) error {
-	URI := fmt.Sprintf("amqp://%s:%s@%s:%d/", "backendtest", "backendtest","localhost", 5672)
+	URI := fmt.Sprintf("amqp://%s:%s@%s:%d/",
+		os.Getenv("BACKEND_BROKER_USER"),
+		os.Getenv("BACKEND_BROKER_PASSWORD"),
+		os.Getenv("BACKEND_BROKER_HOST"),
+		os.Getenv("BACKEND_BROKER_PORT"),
+	)
 	conn, err := amqp.Dial(URI)
 	if err != nil {
 		return err
@@ -27,12 +33,12 @@ func Publish(ctx context.Context, message Message) error {
 	defer ch.Close()
 
 	_, err = ch.QueueDeclare(
-		message.Queue, // name
-		true,        // durable
-		false,       // delete when unused
-		false,       // exclusive
-		false,       // no-wait
-		nil,         // arguments
+		message.Queue, 
+		true,          
+		false,         
+		false,         
+		false,       
+		nil,           
 	)
 
 	if err != nil {
@@ -43,28 +49,19 @@ func Publish(ctx context.Context, message Message) error {
 	if err != nil {
 		return err
 	}
-
-	//confirms := ch.NotifyPublish(make(chan amqp.Confirmation, 1))
-
 	err = ch.Publish(
-		"",     // exchange
-		message.Queue, // routing key
-		false,  // mandatory
-		false,  // immediate
+		"",            
+		message.Queue, 
+		false,        
+		false,        
 		amqp.Publishing{
-			DeliveryMode:  amqp.Persistent,
-			ContentType:   message.ContentType,
-			Body:          *message.Body,
+			DeliveryMode: amqp.Persistent,
+			ContentType:  message.ContentType,
+			Body:         *message.Body,
 		})
 	if err != nil {
 		return err
 	}
-
-	//confirmed := <-confirms
-	//if confirmed.Ack {
-	//	_ = "Message published"
-	//	return nil
-	//}
 
 	return nil
 }
