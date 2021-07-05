@@ -3,8 +3,8 @@ package transfer
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
-	"github.com/hemillainy/backend/config"
 	error2 "github.com/hemillainy/backend/error"
 	"github.com/hemillainy/backend/rabbit"
 	repo "github.com/hemillainy/backend/repository"
@@ -15,7 +15,7 @@ import (
 )
 
 type responseMessage struct {
-	Message	string `json:"message"`
+	Message string `json:"message"`
 }
 
 func TransactionHandler(w http.ResponseWriter, r *http.Request) {
@@ -26,37 +26,40 @@ func TransactionHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 	}
 
-	repository, err := database.Open(context.Background(), &config.Config{})
+	type errorMsg struct {
+		error	string	`json:"error"`
+	}
+	repository, err := database.Open(context.Background())
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(err.Error())
+		json.NewEncoder(w).Encode(errorMsg{error: err.Error()})
 		return
 	}
 
-	ok, err := validTransaction(context.Background(), t.Payer, t.Value, repository)
-	if !ok {
+	valid, err := validTransaction(context.Background(), t.Payer, t.Value, repository)
+	if !valid {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(err.Error())
+		json.NewEncoder(w).Encode(errorMsg{error: err.Error()})
 		return
 	}
 
 	msg, err := authorizerRequest()
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(err.Error())
+		json.NewEncoder(w).Encode(errorMsg{error: err.Error()})
 		return
 	}
 
 	if msg != "Autorizado" {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode("transação não autorizada")
+		json.NewEncoder(w).Encode(errorMsg{error: errors.New("transação não autorizada").Error()})
 		return
 	}
 
 	tCreated, err := repository.CreateTransfer(context.Background(), t)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(err.Error())
+		json.NewEncoder(w).Encode(errorMsg{error: err.Error()})
 		return
 	}
 
@@ -71,12 +74,12 @@ func validTransaction(ctx context.Context, payerUUID string, transactionValue fl
 		return false, err
 	}
 	if payer.Wallet < transactionValue {
-		return false, error2.ErrInvalidBalance
+		return false, error2.ErrInvalidTransaction
 	}
 	return true, nil
 }
 
-func authorizerRequest() (string, error){
+func authorizerRequest() (string, error) {
 	resp, err := http.Get("https://run.mocky.io/v3/8fafdd68-a090-496f-8c9a-3442cf30dae6")
 	if err != nil {
 		return "", err
