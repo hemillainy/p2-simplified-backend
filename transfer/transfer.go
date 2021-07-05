@@ -63,6 +63,9 @@ func TransactionHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	repository.UpdateUserWallet(context.Background(), t.Value, t.Payer, true)
+	repository.UpdateUserWallet(context.Background(), t.Value, t.Payee, false)
+
 	notify(t)
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(tCreated)
